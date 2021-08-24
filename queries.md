@@ -32,3 +32,20 @@ ORDER BY file_downloads_count DESC
 ```
 
 ![image](https://user-images.githubusercontent.com/37925362/130644751-6397b80b-214c-48df-84ca-39ccfaabb648.png)
+
+## Top countries with highest package downloads
+```sql
+SELECT
+       country_code,
+       COUNT(*) AS file_downloads_count
+FROM `bigquery-public-data.pypi.file_downloads`
+  AS file_downloads
+WHERE (file_downloads.timestamp >= timestamp_add(current_timestamp(), INTERVAL -(4*30) DAY)) 
+GROUP BY country_code
+ORDER BY file_downloads_count DESC
+limit 10
+    
+```
+
+![image](https://user-images.githubusercontent.com/37925362/130646864-2c443b57-118c-4b35-917c-1f4ec5e931b8.png)
+
