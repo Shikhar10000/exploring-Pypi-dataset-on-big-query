@@ -49,3 +49,35 @@ limit 10
 
 ![image](https://user-images.githubusercontent.com/37925362/130646864-2c443b57-118c-4b35-917c-1f4ec5e931b8.png)
 
+
+
+## Average downloads per package by country
+```sql
+with pacakge_downloads as 
+(
+SELECT
+       file_downloads.file.project  AS Project_name,
+       COUNT(*) AS file_downloads_count
+FROM `bigquery-public-data.pypi.file_downloads`
+  AS file_downloads
+WHERE (file_downloads.file.project LIKE '%parser%') AND (file_downloads.timestamp >= timestamp_add(current_timestamp(), INTERVAL -(4*30) DAY)) 
+GROUP BY Project_name
+ORDER BY file_downloads_count DESC
+)
+
+
+SELECT country_code,
+       AVG(pacakge_downloads.file_downloads_count) AS file_downloads_avg
+FROM `bigquery-public-data.pypi.file_downloads`
+  AS file_downloads
+join pacakge_downloads
+on pacakge_downloads.Project_name = file_downloads.file.project
+
+WHERE  (file_downloads.timestamp >= timestamp_add(current_timestamp(), INTERVAL -(4*30) DAY)) 
+GROUP BY country_code
+ORDER BY file_downloads_avg DESC
+
+```
+
+
+![image](https://user-images.githubusercontent.com/37925362/130653058-6841c864-4672-425e-92c6-e7b039a5f0d0.png)
